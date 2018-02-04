@@ -72,7 +72,8 @@ def main():
         '--ip',
         required=True,
         type=str,
-        help='ip address or network for search in log file'
+        help='''ip address or network for search in log file;
+        e.g. --ip 10.0.0.1 or --ip 10.0.0.1/24'''
     )
     parser.add_argument(
         'logfile',
