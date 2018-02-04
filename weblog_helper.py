@@ -18,7 +18,7 @@ def find_lines(ip, logfile):
         src_ip, _ = line.split(None, 1)
 
         try:
-            src_ip = ip_sanity_check(src_ip)
+            parsed_src_ip = ip_sanity_check(src_ip)
         except InvalidIpError as err:
             sys.stderr.write(
                 '[{}] Skipped the line number {}: {}'.format(
@@ -29,7 +29,7 @@ def find_lines(ip, logfile):
             )
             continue
 
-        if src_ip.ip in ip.network:
+        if parsed_src_ip.ip in ip.network:
             sys.stdout.write(line)
 
 
@@ -54,13 +54,13 @@ def ip_sanity_check(ip):
     Returns ipaddress.IPv{4,6}Interface object
     """
     try:
-        ip = ipaddress.ip_interface(unicode(ip))
+        parsed_ip = ipaddress.ip_interface(unicode(ip))
     except ValueError:
         raise InvalidIpError(
             '{} is not a valid ip address or network'.format(ip)
         )
 
-    return ip
+    return parsed_ip
 
 
 if __name__ == '__main__':
