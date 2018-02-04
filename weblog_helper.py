@@ -63,7 +63,7 @@ def ip_sanity_check(ip):
     return parsed_ip
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         add_help=True,
         description='Returns all log lines that correspond to a given source IP address or CIDR network'
@@ -88,3 +88,7 @@ if __name__ == '__main__':
         sys.exit(err)
 
     process_log_files(ip, args.logfile)
+
+
+if __name__ == '__main__':
+    main()
