@@ -11,15 +11,16 @@ def find_lines(ip, logfile):
     """
     for line in logfile:
         src_ip, _ = line.split(None, 1)
-        ip_check_result = ip_sanity_check(src_ip)
 
-        if not ip_check_result['status']:
+        try:
+            src_ip = ip_sanity_check(src_ip)
+        except ValueError:
             sys.stderr.write(
-                '[Warning] The src_ip "{}" is invalid; Skip line;'.format(src_ip)
+                '[Warning] The src_ip "{}" is invalid; Skip line;\n'.format(src_ip)
             )
             continue
 
-        if ip_check_result['ip'].ip in ip.network:
+        if src_ip.ip in ip.network:
             sys.stdout.write(line)
 
 
@@ -31,7 +32,6 @@ def process_log_files(ip, logfiles):
         try:
             with open(logfile) as lf:
                 find_lines(ip, lf)
-
         except Exception as err:
             print err
 
@@ -39,22 +39,14 @@ def process_log_files(ip, logfiles):
 def ip_sanity_check(ip):
     """
     Checks that an ip or a network is valid.
-    Returns a dict with fields:
-        status - bool; True if valid, False if not;
-        msg - str or None; message for print out;
-        ip - ipaddress.IPv{4,6}Interface object or None
+    Returns ipaddress.IPv{4,6}Interface object
     """
     try:
-        ip = ipaddress.ip_interface(u'{}'.format(ip))
-
+        ip = ipaddress.ip_interface(unicode(ip))
     except ValueError:
-        return {
-            'status': False,
-            'msg': '[Error 1] "{}" is invalid ip or network'.format(ip),
-            'ip': None
-        }
+        raise
 
-    return {'status': True, 'msg': None, 'ip': ip}
+    return ip
 
 
 if __name__ == '__main__':
@@ -74,11 +66,11 @@ if __name__ == '__main__':
         nargs='+',
         help='log files for searching'
     )
-
     args = parser.parse_args()
 
-    ip_check_result = ip_sanity_check(args.ip)
-    if not ip_check_result['status']:
-        sys.exit(ip_check_result['msg'])
+    try:
+        ip = ip_sanity_check(args.ip)
+    except ValueError:
+        sys.exit('[Error] "{}" is invalid ip or network'.format(args.ip))
 
-    process_log_files(ip_check_result['ip'], args.logfile)
+    process_log_files(ip, args.logfile)
