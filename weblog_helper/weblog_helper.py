@@ -10,7 +10,7 @@ class InvalidIpError(Exception):
     pass
 
 
-def find_lines(ip, logfile):
+def find_lines(ip_to_find, logfile):
     """
     Searches and prints lines that match for ip or network
     """
@@ -18,7 +18,7 @@ def find_lines(ip, logfile):
         src_ip, _ = line.split(None, 1)
 
         try:
-            parsed_src_ip = ip_sanity_check(src_ip)
+            parsed_src_ip = parse_ip(src_ip)
         except InvalidIpError as err:
             sys.stderr.write(
                 '[{}] Skipped the line number {}: {}'.format(
@@ -29,18 +29,18 @@ def find_lines(ip, logfile):
             )
             continue
 
-        if parsed_src_ip.ip in ip.network:
+        if parsed_src_ip.ip in ip_to_find.network:
             sys.stdout.write(line)
 
 
-def process_log_files(ip, logfiles):
+def process_log_files(ip_to_find, logfiles):
     """
     Iterates through a log files list and calls find_lines function for search proper lines
     """
     for logfile in logfiles:
         try:
             with open(logfile) as lf:
-                find_lines(ip, lf)
+                find_lines(ip_to_find, lf)
         except Exception as err:
             sys.stderr.write('{}: {}\n'.format(
                 err.strerror,
@@ -48,7 +48,7 @@ def process_log_files(ip, logfiles):
             ))
 
 
-def ip_sanity_check(ip):
+def parse_ip(ip):
     """
     Checks that an ip or a network is valid.
     Returns ipaddress.IPv{4,6}Interface object
@@ -84,7 +84,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        ip = ip_sanity_check(args.ip)
+        ip = parse_ip(args.ip)
     except InvalidIpError as err:
         sys.exit(err)
 
