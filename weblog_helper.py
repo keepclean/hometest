@@ -5,18 +5,27 @@ import ipaddress
 import sys
 
 
+class InvalidIpError(Exception):
+    """ Custom exception """
+    pass
+
+
 def find_lines(ip, logfile):
     """
     Searches and prints lines that match for ip or network
     """
-    for line in logfile:
+    for lineno, line in enumerate(logfile, start=1):
         src_ip, _ = line.split(None, 1)
 
         try:
             src_ip = ip_sanity_check(src_ip)
-        except ValueError:
+        except InvalidIpError as err:
             sys.stderr.write(
-                '[Warning] The src_ip "{}" is invalid; Skip line;\n'.format(src_ip)
+                '[{}] Skipped the line number {}: {}'.format(
+                    logfile.name,
+                    lineno,
+                    err
+                )
             )
             continue
 
@@ -47,7 +56,9 @@ def ip_sanity_check(ip):
     try:
         ip = ipaddress.ip_interface(unicode(ip))
     except ValueError:
-        raise
+        raise InvalidIpError(
+            '{} is not a valid ip address or network'.format(ip)
+        )
 
     return ip
 
@@ -73,7 +84,7 @@ if __name__ == '__main__':
 
     try:
         ip = ip_sanity_check(args.ip)
-    except ValueError:
-        sys.exit('[Error] "{}" is invalid ip or network'.format(args.ip))
+    except InvalidIpError as err:
+        sys.exit(err)
 
     process_log_files(ip, args.logfile)
