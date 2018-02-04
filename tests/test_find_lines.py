@@ -24,4 +24,6 @@ class TestFindLines:
             find_lines(ip, lf)
 
         out, err = capfd.readouterr()
-        assert(err == '[Warning] The src_ip "31.184.238.128/33" is invalid; Skip line;\n')
+        assert(
+            err == '[tests/logfile.txt] Skipped the line number 2: 31.184.238.128/33 is not a valid ip address or network'
+        )
