@@ -4,7 +4,7 @@ import os
 import pytest
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../weblog_helper'))
 from weblog_helper import ip_sanity_check, InvalidIpError
 
 
