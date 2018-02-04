@@ -15,7 +15,7 @@ class TestProcessLogFiles:
 
         out, err = capfd.readouterr()
         assert(
-            out == "[Errno 2] No such file or directory: '{}'\n".format(
+            err == "No such file or directory: {}\n".format(
                 logfile
             )
         )

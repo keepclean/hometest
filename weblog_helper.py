@@ -33,7 +33,10 @@ def process_log_files(ip, logfiles):
             with open(logfile) as lf:
                 find_lines(ip, lf)
         except Exception as err:
-            print err
+            sys.stderr.write('{}: {}\n'.format(
+                err.strerror,
+                err.filename
+            ))
 
 
 def ip_sanity_check(ip):
