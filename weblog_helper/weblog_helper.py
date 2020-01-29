@@ -7,6 +7,7 @@ import sys
 
 class InvalidIpError(Exception):
     """ Custom exception """
+
     pass
 
 
@@ -21,11 +22,7 @@ def find_lines(ip_to_find, logfile):
             parsed_src_ip = parse_ip(src_ip)
         except InvalidIpError as err:
             sys.stderr.write(
-                '[{}] Skipped the line number {}: {}'.format(
-                    logfile.name,
-                    lineno,
-                    err
-                )
+                "[{}] Skipped the line number {}: {}".format(logfile.name, lineno, err)
             )
             continue
 
@@ -42,10 +39,7 @@ def process_log_files(ip_to_find, logfiles):
             with open(logfile) as lf:
                 find_lines(ip_to_find, lf)
         except Exception as err:
-            sys.stderr.write('{}: {}\n'.format(
-                err.strerror,
-                err.filename
-            ))
+            sys.stderr.write("{}: {}\n".format(err.strerror, err.filename))
 
 
 def parse_ip(ip):
@@ -56,9 +50,7 @@ def parse_ip(ip):
     try:
         parsed_ip = ipaddress.ip_interface(unicode(ip))
     except ValueError:
-        raise InvalidIpError(
-            '{} is not a valid ip address or network'.format(ip)
-        )
+        raise InvalidIpError("{} is not a valid ip address or network".format(ip))
 
     return parsed_ip
 
@@ -66,21 +58,16 @@ def parse_ip(ip):
 def main():
     parser = argparse.ArgumentParser(
         add_help=True,
-        description='Returns all log lines that correspond to a given source IP address or CIDR network'
+        description="Returns all log lines that correspond to a given source IP address or CIDR network",
     )
     parser.add_argument(
-        '--ip',
+        "--ip",
         required=True,
         type=str,
-        help='''ip address or network for search in log file;
-        e.g. --ip 10.0.0.1 or --ip 10.0.0.1/24'''
+        help="""ip address or network for search in log file;
+        e.g. --ip 10.0.0.1 or --ip 10.0.0.1/24""",
     )
-    parser.add_argument(
-        'logfile',
-        type=str,
-        nargs='+',
-        help='log files for searching'
-    )
+    parser.add_argument("logfile", type=str, nargs="+", help="log files for searching")
     args = parser.parse_args()
 
     try:
@@ -91,5 +78,5 @@ def main():
     process_log_files(ip, args.logfile)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
