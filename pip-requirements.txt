@@ -1,1 +1,2 @@
-ipaddress==1.0.19 --hash=sha256:200d8686011d470b5e4de207d803445deee427455cd0cb7c982b68cf82524f81
+-i https://pypi.python.org/simple/
+ipaddress==1.0.19
